@@ -1,0 +1,31 @@
+{
+  "name": "puhelinbackend",
+  "version": "0.0.1",
+  "description": "Fullstackopen -kurssin osan3 puhelinluettelo-tehtävää varten luotu repositorio",
+  "keywords": [
+    "puhelinluettelo"
+  ],
+  "homepage": "https://github.com/hanterio/FSO25_osa3#readme",
+  "bugs": {
+    "url": "https://github.com/hanterio/FSO25_osa3/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanterio/FSO25_osa3.git"
+  },
+  "license": "ISC",
+  "author": "Hannes",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
