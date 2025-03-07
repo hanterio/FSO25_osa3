@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
 const app = express()
 
@@ -12,49 +14,28 @@ morgan.token('body', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-let persons = [
-    {
-        "name": "Arto Hellas",
-        "number": "040-123456",
-        "id": "1"
-    },  
-    {
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523",
-        "id": "2"
-    },
-    {
-        "name": "Dan Abramov",
-        "number": "12-43-234345",
-        "id": "3"
-    },
-    {
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122",
-        "id": "4"
-    }
-]
+//const info = `<p>Phonebook has info for ${persons.length} people</p>`
+//const aika = new Date()
 
-const info = `<p>Phonebook has info for ${persons.length} people</p>`
-const aika = new Date()
-
-app.get('/info', (request, response) => {
+/*app.get('/info', (request, response) => {
     response.send(info + aika)
-})
+})*/
 
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
+    Person.findById(request.params.id).then(person => {
+        if (person) {
+            response.json(person)
+        } else {
+            response.status(404).end()
+        }
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -65,36 +46,32 @@ app.delete('/api/persons/:id', (request, response) => {
   })
 
 app.post('/api/persons', (request, response) => {
-    const uusiId = persons.length > 0
-        ? Math.floor(Math.random() * 1000000000) 
-        : 1
-
     const body = request.body
-
-    if (!body.name) {
-        return response.status(400).json({
-            error: 'nimi puuttuu'
-        })
-    } else if (!body.number) {
+  
+    if (body.name === undefined) {
+      return response.status(400).json({ error: 'nimi puuttuu' })
+    } else if (body.number === undefined) {
         return response.status(400).json({
             error: 'numero puuttuu'
-        })
-    } else if (persons.some(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'nimi on jo luettelossa'
-        })
-    }
-
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: String(uusiId)
-    }
-
-    persons = persons.concat(person)
-
-    response.json(person)
-})
+           })
+    } 
+    Person.exists({ name: body.name }).then(exists => {
+        if (exists) {
+            return response.status(400).json({
+                error: 'nimi on jo luettelossa'
+            })
+        }
+    })
+  
+    const person = new Person({
+      name: body.name,
+      number: body.number || false,
+    })
+  
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
+  })
 
 
 const PORT = process.env.PORT || 3001
