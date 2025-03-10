@@ -28,15 +28,15 @@ const person = new Person({
 })
 
 if (!nimi) {
-    Person.find({}).then(result => {
-        result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
-        })
-        mongoose.connection.close()
-      })
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
+    })
+    mongoose.connection.close()
+  })
 } else {
-    person.save().then(result => {
+  person.save().then(() => {
     console.log(`added ${nimi} number ${numero} to phonebook`)
     mongoose.connection.close()
-    })
+  })
 }
